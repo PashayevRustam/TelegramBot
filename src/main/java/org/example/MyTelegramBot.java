@@ -208,7 +208,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         } else if (message.equalsIgnoreCase("/receivenotifications")) {
-            runnable(doc, chatId);
+            runnable(chatId);
         } else {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
@@ -222,10 +222,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void runnable(Document doc, long chatId) {
+    public void runnable(long chatId) {
         Runnable myTask = () -> {
             try {
                 while (!("start" == STOPCOMMAND)) {
+                    Document doc = getAnimeSchedule("/api/schedule");
                     // Задержка на 30 минут
                     TimeUnit.MINUTES.sleep(5);
                     // Ваш код, который должен выполниться после задержки
@@ -294,6 +295,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     "Пятница -" + " /friday\n" +
                     "Суббота -" + " /saturday\n" +
                     "Воскресенье -" + " /sunday\n\n" +
+                    "Получать уведомления - " + " /receivenotifications\n\n" +
                     "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!";
         } else {
             return "Комманда не определена!\n" +
@@ -306,6 +308,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     "Пятница -" + " /friday\n" +
                     "Суббота -" + " /saturday\n" +
                     "Воскресенье -" + " /sunday\n\n" +
+                    "Получать уведомления - " + " /receivenotifications\n\n" +
                     "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!";
         }
     }
