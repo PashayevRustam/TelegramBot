@@ -51,12 +51,17 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.List;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+
 public class MyTelegramBot extends TelegramLongPollingBot {
 
     public static final String DOMEN = "https://v2.vost.pw";
     public static List<String> anime = new ArrayList<>();
     public static final String STOPCOMMAND = "stop";
-
+    public static DatabaseManager databaseManager;
     @Override
     public String getBotUsername() {
         // Укажите имя вашего бота
@@ -108,7 +113,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private Document getAnimeSchedule(String url) {
+    private static Document getAnimeSchedule(String url) {
         Document doc;
         try {
             // Получаем HTML страницу
@@ -208,6 +213,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         } else if (message.equalsIgnoreCase("/receivenotifications")) {
+            databaseManager.insertData(chatId);
+            databaseManager.closeConnection();
             runnable(chatId);
         } else {
             SendMessage sendMessage = new SendMessage();
@@ -315,7 +322,31 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     public static void main(String[] args) throws TelegramApiException {
         MyTelegramBot bot = new MyTelegramBot();
+        String url = "jdbc:sqlite:database.db";
+        databaseManager = new DatabaseManager(url);
+        List<Long> list = databaseManager.getData();
+        for (Long chatID: list) {
+            bot.runnable(chatID);
+        }
         bot.run();
+    }
+
+
+
+    public static Connection connect() {
+        Connection connection = null;
+        try {
+            // Загрузите драйвер JDBC SQLite
+            Class.forName("org.sqlite.JDBC");
+
+            // Установите соединение с базой данных SQLite
+            String url = "jdbc:sqlite:database.db";
+            connection = DriverManager.getConnection(url);
+            System.out.println("Подключение к SQLite успешно установлено.");
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return connection;
     }
 
     public void run() throws TelegramApiException {
