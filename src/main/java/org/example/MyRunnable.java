@@ -32,10 +32,12 @@ public class MyRunnable implements Runnable {
                 // Задержка на 10 секунд
                 TimeUnit.SECONDS.sleep(10);
                 // Ваш код, который должен выполниться после задержки
-                bot.infiniteLoop(doc, this.chatId, "raspis raspis_fixed");
+                bot.infiniteLoop(doc, "raspis raspis_fixed");
+                System.out.println("Chat ID 123123123: " + chatId);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            System.out.println("Chat ID поарошпа: " + chatId);
         }
     }
 }

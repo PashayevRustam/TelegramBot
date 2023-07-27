@@ -64,6 +64,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     public static List<String> anime = new ArrayList<>();
     public static final String STOPCOMMAND = "stop";
     public static DatabaseManager databaseManager;
+
     @Override
     public String getBotUsername() {
         // Укажите имя вашего бота
@@ -217,7 +218,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         } else if (message.equalsIgnoreCase("/receivenotifications")) {
             databaseManager.insertData(chatId);
             //databaseManager.closeConnection();
-            runnable(chatId);
+            //runnable();
         } else {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
@@ -231,15 +232,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void runnable(long chatId) {
+    public void runnable() {
         Runnable myTask = () -> {
             try {
                 while (!("start" == STOPCOMMAND)) {
                     Document doc = getAnimeSchedule("/api/schedule");
                     // Задержка на 10 секунд
                     TimeUnit.SECONDS.sleep(10);
-                    // Ваш код, который должен выполниться после задержки
-                    infiniteLoop(doc, chatId, "raspis raspis_fixed");
+                    infiniteLoop(doc, "raspis raspis_fixed");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -251,11 +251,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         thread.start();
     }
 
-    public void infiniteLoop(Document doc, long chatId, String listName) {
+    public void infiniteLoop(Document doc, String listName) {
         try {
-            // Отправка ответного сообщения с расписанием аниме
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chatId);
             //sendMessage.setText(schedule);
             Elements elements = doc.getElementsByClass(listName);
 
@@ -279,8 +276,13 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 for (int i = 0; i < animeNames.size(); i++) {
                     list += (i + 1) + ". " + animeNames.get(i) + "\n";
                 }
-                sendMessage.setText(list);
-                Message message = execute(sendMessage);
+                SendMessage sendMessage = new SendMessage();
+                List<Long> listID = databaseManager.getData();
+                for (Long chatID : listID) {
+                    sendMessage.setChatId(chatID);
+                    sendMessage.setText(list);
+                    Message message = execute(sendMessage);
+                }
             }
 
         } catch (Exception e) {
@@ -326,12 +328,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         MyTelegramBot bot = new MyTelegramBot();
         String url = "jdbc:sqlite:database.db";
         databaseManager = new DatabaseManager(url);
-        List<Long> list = databaseManager.getData();
-        ExecutorService executor = Executors.newFixedThreadPool(list.size());
-        for (Long chatID: list) {
-            Runnable runnable = new MyRunnable(chatID);
-            executor.execute(runnable);
-        }
+        bot.runnable();
         bot.run();
     }
 
