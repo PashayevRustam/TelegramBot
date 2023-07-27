@@ -58,6 +58,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class MyTelegramBot extends TelegramLongPollingBot {
 
     public static final String DOMEN = "https://v2.vost.pw";
@@ -92,9 +95,18 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     public void saveLog(Update update, long chatId, String message) {
-        String filePath = "C:\\Users\\rpashayev\\Downloads\\TelegramBot\\log.txt";
+        String filePath = "C:\\Users\\Rustam\\Desktop\\Java\\TelegramBot\\log.txt";
 
         try {
+            // Получение текущей даты и времени
+            LocalDateTime currentDateTime = LocalDateTime.now();
+
+            // Создание форматтера для нужного формата
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+            // Применение форматтера к текущей дате и времени
+            String formattedDateTime = currentDateTime.format(formatter);
+
             // Создаем объект File для представления файла по указанному пути
             File file = new File(filePath);
 
@@ -105,7 +117,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             // Записываем текст в файл
-            bufferedWriter.write(update.getMessage().getFrom().getFirstName() + " (@" + update.getMessage().getFrom().getUserName() + ") " + chatId + ": " + message + "\n");
+            bufferedWriter.write(update.getMessage().getFrom().getFirstName() + " (@" + update.getMessage().getFrom().getUserName() + ") " + chatId + " (" + formattedDateTime + ")" + ": " + message + "\n");
 
             // Закрываем BufferedWriter
             bufferedWriter.close();
