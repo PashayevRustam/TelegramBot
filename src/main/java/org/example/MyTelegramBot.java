@@ -234,7 +234,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             try {
                 while (!("start" == STOPCOMMAND)) {
                     Document doc = getAnimeSchedule("/api/schedule");
-                    // Задержка на 30 минут
+                    // Задержка на 10 секунд
                     TimeUnit.SECONDS.sleep(10);
                     // Ваш код, который должен выполниться после задержки
                     infiniteLoop(doc, chatId, "raspis raspis_fixed", "start");
