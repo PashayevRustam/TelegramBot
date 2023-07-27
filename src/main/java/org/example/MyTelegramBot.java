@@ -37,6 +37,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.BufferedWriter;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,7 +115,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private static Document getAnimeSchedule(String url) {
+    public static Document getAnimeSchedule(String url) {
         Document doc;
         try {
             // Получаем HTML страницу
@@ -214,7 +216,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             }
         } else if (message.equalsIgnoreCase("/receivenotifications")) {
             databaseManager.insertData(chatId);
-            databaseManager.closeConnection();
+            //databaseManager.closeConnection();
             runnable(chatId);
         } else {
             SendMessage sendMessage = new SendMessage();
@@ -237,7 +239,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     // Задержка на 10 секунд
                     TimeUnit.SECONDS.sleep(10);
                     // Ваш код, который должен выполниться после задержки
-                    infiniteLoop(doc, chatId, "raspis raspis_fixed", "start");
+                    infiniteLoop(doc, chatId, "raspis raspis_fixed");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -249,7 +251,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         thread.start();
     }
 
-    public void infiniteLoop(Document doc, long chatId, String listName, String command) {
+    public void infiniteLoop(Document doc, long chatId, String listName) {
         try {
             // Отправка ответного сообщения с расписанием аниме
             SendMessage sendMessage = new SendMessage();
@@ -325,8 +327,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         String url = "jdbc:sqlite:database.db";
         databaseManager = new DatabaseManager(url);
         List<Long> list = databaseManager.getData();
+        ExecutorService executor = Executors.newFixedThreadPool(list.size());
         for (Long chatID: list) {
-            bot.runnable(chatID);
+            Runnable runnable = new MyRunnable(chatID);
+            executor.execute(runnable);
         }
         bot.run();
     }

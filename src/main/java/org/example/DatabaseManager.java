@@ -81,19 +81,30 @@ public class DatabaseManager {
 
     public void insertData(Long values) {
         PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
         try {
-            // Создаем SQL-запрос INSERT с параметрами
-            String sql = "INSERT INTO ListOfID (id, chatID) VALUES (?, ?)";
-
-            // Создаем объект PreparedStatement для выполнения запроса
+            String sql = "SELECT * FROM ListOfID WHERE id = ?";
             statement = connection.prepareStatement(sql);
 
-            // Добавляем значения в запрос INSERT с использованием цикла или итерации по коллекции
+            // Устанавливаем значение параметра
             statement.setLong(1, values);
 
-            // Выполняем запрос INSERT для каждого значения
-            statement.executeUpdate();
+            resultSet = statement.executeQuery();
+
+            if (!resultSet.next()) {
+                // Создаем SQL-запрос INSERT с параметрами
+                String sqlNew = "INSERT INTO ListOfID (id, chatID) VALUES (?, ?)";
+
+                // Создаем объект PreparedStatement для выполнения запроса
+                statement = connection.prepareStatement(sqlNew);
+
+                // Добавляем значения в запрос INSERT с использованием цикла или итерации по коллекции
+                statement.setLong(1, values);
+
+                // Выполняем запрос INSERT для каждого значения
+                statement.executeUpdate();
+            }
 
             System.out.println("Новые данные успешно добавлены в базу данных.");
         } catch (SQLException e) {
