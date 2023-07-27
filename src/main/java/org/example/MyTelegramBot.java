@@ -62,7 +62,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     public static final String DOMEN = "https://v2.vost.pw";
     public static List<String> anime = new ArrayList<>();
-    public static final String STOPCOMMAND = "stop";
     public static DatabaseManager databaseManager;
 
     @Override
@@ -205,37 +204,20 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         } else if (message.equalsIgnoreCase("/sunday")) {
             sendListOfAnime(doc, chatId, "raspisSun");
         } else if (message.equalsIgnoreCase("/start")) {
-            // Отправка ответного сообщения
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chatId);
-            sendMessage.setText(returnText(1));
-
-            try {
-                execute(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            returnText(1, chatId);
         } else if (message.equalsIgnoreCase("/receivenotifications")) {
             databaseManager.insertData(chatId);
-            //databaseManager.closeConnection();
-            //runnable();
+        } else if (message.equalsIgnoreCase("/cancelnotifications")) {
+            databaseManager.deleteData(chatId);
         } else {
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chatId);
-            sendMessage.setText(returnText(2));
-
-            try {
-                execute(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            returnText(2, chatId);
         }
     }
 
     public void runnable() {
         Runnable myTask = () -> {
             try {
-                while (!("start" == STOPCOMMAND)) {
+                while (true) {
                     Document doc = getAnimeSchedule("/api/schedule");
                     // Задержка на 10 секунд
                     TimeUnit.SECONDS.sleep(10);
@@ -294,9 +276,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         return name.replaceAll("\\s*\\[[^\\]]*\\]\\s*", " ").trim();
     }
 
-    public String returnText(int num) {
+    public void returnText(int num, long chatId) {
         if (num == 1) {
-            return "Добро пожаловать!\n" +
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText("Добро пожаловать!\n" +
                     "Выберите день недели, чтобы получить список аниме на этот день:\n" +
                     "\n" +
                     "Понедельник -" + " /monday\n" +
@@ -307,9 +291,18 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     "Суббота -" + " /saturday\n" +
                     "Воскресенье -" + " /sunday\n\n" +
                     "Получать уведомления - " + " /receivenotifications\n\n" +
-                    "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!";
+                    "Отменить уведомления - " + " /cancelnotifications\n\n" +
+                    "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!");
+
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         } else {
-            return "Комманда не определена!\n" +
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText("Комманда не определена!\n" +
                     "Выберите день недели, чтобы получить список аниме на этот день:\n" +
                     "\n" +
                     "Понедельник -" + " /monday\n" +
@@ -320,7 +313,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     "Суббота -" + " /saturday\n" +
                     "Воскресенье -" + " /sunday\n\n" +
                     "Получать уведомления - " + " /receivenotifications\n\n" +
-                    "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!";
+                    "Отменить уведомления - " + " /cancelnotifications\n\n" +
+                    "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!");
+
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -328,7 +328,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         MyTelegramBot bot = new MyTelegramBot();
         String url = "jdbc:sqlite:database.db";
         databaseManager = new DatabaseManager(url);
-        bot.runnable();
+        //bot.runnable();
         bot.run();
     }
 

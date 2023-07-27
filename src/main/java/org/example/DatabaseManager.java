@@ -33,7 +33,7 @@ public class DatabaseManager {
         } finally {
             try {
                 if (statement != null) {
-                    //statement.close();
+                    statement.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -113,11 +113,36 @@ public class DatabaseManager {
             try {
                 // Закрываем statement
                 if (statement != null) {
-                    //statement.close();
+                    statement.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void deleteData(Long values) {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sql = "SELECT * FROM ListOfID WHERE id = ?";
+            statement = connection.prepareStatement(sql);
+
+            statement.setLong(1, values);
+
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String sqlNew = "DELETE FROM ListOfID WHERE id = ?";
+                statement = connection.prepareStatement(sqlNew);
+                statement.setLong(1, values);
+                statement.executeUpdate();
+            }
+
+            System.out.println("Запись успешно удалена.");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
