@@ -55,12 +55,8 @@ public class DatabaseManager {
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                // Получаем значения столбцов
                 Long id = resultSet.getLong("id");
-                //int chatID = resultSet.getInt("chatID");
-
                 chatID.add(id);
-
             }
         } catch (SQLException e) {
             e.printStackTrace();

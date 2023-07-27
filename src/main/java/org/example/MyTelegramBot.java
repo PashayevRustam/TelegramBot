@@ -209,6 +209,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             databaseManager.insertData(chatId);
         } else if (message.equalsIgnoreCase("/cancelnotifications")) {
             databaseManager.deleteData(chatId);
+            returnText(3, chatId);
         } else {
             returnText(2, chatId);
         }
@@ -290,7 +291,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     "Пятница -" + " /friday\n" +
                     "Суббота -" + " /saturday\n" +
                     "Воскресенье -" + " /sunday\n\n" +
-                    "Получать уведомления - " + " /receivenotifications\n\n" +
+                    "Получать уведомления - " + " /receivenotifications\n" +
                     "Отменить уведомления - " + " /cancelnotifications\n\n" +
                     "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!");
 
@@ -299,7 +300,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-        } else {
+        } else if (num == 2) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
             sendMessage.setText("Комманда не определена!\n" +
@@ -312,10 +313,19 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     "Пятница -" + " /friday\n" +
                     "Суббота -" + " /saturday\n" +
                     "Воскресенье -" + " /sunday\n\n" +
-                    "Получать уведомления - " + " /receivenotifications\n\n" +
+                    "Получать уведомления - " + " /receivenotifications\n" +
                     "Отменить уведомления - " + " /cancelnotifications\n\n" +
                     "Просто нажмите на кнопку с соответствующим днем недели, чтобы получить список аниме для выбранного дня. Приятного просмотра!");
 
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else if (num == 3) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText("Вы отписались от уведомлений =(");
             try {
                 execute(sendMessage);
             } catch (TelegramApiException e) {
@@ -328,7 +338,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         MyTelegramBot bot = new MyTelegramBot();
         String url = "jdbc:sqlite:database.db";
         databaseManager = new DatabaseManager(url);
-        //bot.runnable();
+        bot.runnable();
         bot.run();
     }
 
