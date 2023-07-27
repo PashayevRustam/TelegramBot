@@ -331,8 +331,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         bot.run();
     }
 
-
-
     public static Connection connect() {
         Connection connection = null;
         try {
