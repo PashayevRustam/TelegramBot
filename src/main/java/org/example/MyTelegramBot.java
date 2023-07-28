@@ -118,7 +118,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
             // Установка параметров запроса
             String requestBody = "{\n" +
-                    "  \"model\": \"gpt-3.5-turbo\",\n" +
+                    "  \"model\": \"gpt-3.5-turbo-16k-0613\",\n" +
                     "  \"messages\": [\n" +
                     "    {\n" +
                     "      \"role\": \"system\",\n" +
@@ -128,7 +128,12 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     "      \"role\": \"user\",\n" +
                     "      \"content\": \"" + message + "\"\n" +
                     "    }\n" +
-                    "  ]\n" +
+                    "  ],\n" +
+                    "  \"temperature\": 1,\n" +
+                    "  \"max_tokens\": 256,\n" +
+                    "  \"top_p\": 1,\n" +
+                    "  \"frequency_penalty\": 0,\n" +
+                    "  \"presence_penalty\": 0\n" +
                     "}";
             StringEntity entity = new StringEntity(requestBody);
             httpPost.setEntity(entity);
