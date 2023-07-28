@@ -61,6 +61,18 @@ import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 public class MyTelegramBot extends TelegramLongPollingBot {
 
     public static final String DOMEN = "https://v2.vost.pw";
@@ -92,6 +104,69 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
         commandName(doc, chatId, message);
         saveLog(update, chatId, message);
+    }
+
+    public void sendMessageAI(String message, long chatId) throws IOException {
+        try {
+            HttpClient httpClient = HttpClients.createDefault();
+            HttpPost httpPost = new HttpPost("https://api.openai.com/v1/chat/completions");
+
+            // Установка заголовков запроса
+            String apiKey = "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";
+            httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setHeader("Authorization", "Bearer " + apiKey);
+
+            // Установка параметров запроса
+            String requestBody = "{\n" +
+                    "  \"model\": \"gpt-3.5-turbo\",\n" +
+                    "  \"messages\": [\n" +
+                    "    {\n" +
+                    "      \"role\": \"system\",\n" +
+                    "      \"content\": \"You are a helpful assistant.\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"role\": \"user\",\n" +
+                    "      \"content\": \"" + message + "\"\n" +
+                    "    }\n" +
+                    "  ]\n" +
+                    "}";
+            StringEntity entity = new StringEntity(requestBody);
+            httpPost.setEntity(entity);
+
+            // Выполнение запроса
+            HttpResponse response = httpClient.execute(httpPost);
+
+            // Обработка ответа
+            HttpEntity responseEntity = response.getEntity();
+            if (responseEntity != null) {
+                String responseString = EntityUtils.toString(responseEntity);
+                System.out.println("Response: " + responseString);
+
+                if (responseEntity != null) {
+                    // Разбор JSON-ответа
+                    Gson gson = new Gson();
+                    ResponseData responseData = gson.fromJson(responseString, ResponseData.class);
+
+                    // Извлечение ответа
+                    if (responseData != null && responseData.getChoices() != null && responseData.getChoices().size() > 0) {
+                        String assistantReply = responseData.getChoices().get(0).getMessage().getContent();
+                        System.out.println("Assistant Reply: " + assistantReply);
+
+                        SendMessage sendMessage = new SendMessage();
+                        sendMessage.setChatId(chatId);
+                        sendMessage.setText(assistantReply);
+                        try {
+                            execute(sendMessage);
+                        } catch (TelegramApiException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveLog(Update update, long chatId, String message) {
@@ -220,10 +295,16 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             returnText(1, chatId);
         } else if (message.equalsIgnoreCase("/receivenotifications")) {
             databaseManager.insertData(chatId);
+            returnText(4, chatId);
         } else if (message.equalsIgnoreCase("/cancelnotifications")) {
             databaseManager.deleteData(chatId);
             returnText(3, chatId);
         } else {
+//            try {
+//                sendMessageAI(message, chatId);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
             returnText(2, chatId);
         }
     }
@@ -344,7 +425,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-        }else if (num == 4) {
+        } else if (num == 4) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
             sendMessage.setText("Вы подписались на уведомления =)");
