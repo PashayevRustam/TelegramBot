@@ -296,7 +296,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             sendListOfAnime(doc, chatId, "raspisSat");
         } else if (message.equalsIgnoreCase("/sunday")) {
             sendListOfAnime(doc, chatId, "raspisSun");
-        } else if (message.equalsIgnoreCase("/start")) {
+        } else if (message.equalsIgnoreCase("/start") || message.equalsIgnoreCase("/help")) {
             returnText(1, chatId);
         } else if (message.equalsIgnoreCase("/receivenotifications")) {
             databaseManager.insertData(chatId);
