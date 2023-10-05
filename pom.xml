@@ -8,17 +8,19 @@
     <artifactId>TelegramBot</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.17</version>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
 
-    <dependency>
-        <groupId>ai.openai</groupId>
-        <artifactId>gpt</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+<!--        <dependency>-->
+<!--            <groupId>ai.openai</groupId>-->
+<!--            <artifactId>gpt</artifactId>-->
+<!--            <version>1.0.0</version>-->
+<!--        </dependency>-->
+    </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
