@@ -175,8 +175,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     public void saveLog(Update update, long chatId, String message) {
-        //String filePath = "C:\\Users\\Rustam\\Desktop\\Java\\TelegramBot\\log.txt";
-        String filePath = "C:\\Users\\rpashayev\\Downloads\\TelegramBot\\log.txt";
+        String filePath = "./log.txt";
 
         try {
             // Получение текущей даты и времени
