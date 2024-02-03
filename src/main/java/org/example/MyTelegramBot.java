@@ -96,7 +96,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         // Получение сообщения от пользователя
         String message = update.getMessage().getText();
         long chatId = update.getMessage().getChatId();
-        Document doc = getAnimeSchedule("/api/schedule");
+        Document doc = getAnimeSchedule(""); //"/api/schedule"
 
         if (doc == null) {
             return;
@@ -317,7 +317,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         Runnable myTask = () -> {
             try {
                 while (true) {
-                    Document doc = getAnimeSchedule("/api/schedule");
+                    Document doc = getAnimeSchedule(""); //"/api/schedule"
                     // Задержка на 10 секунд
                     TimeUnit.SECONDS.sleep(10);
                     infiniteLoop(doc, "raspis raspis_fixed");
