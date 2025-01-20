@@ -268,7 +268,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     public void sendListMessage(String text, SendMessage sendMessage, String listName) {
-        String[] newText = text.split("~ \\(\\d{2}:\\d{2}\\)");
+        String[] newText = text.split("~ \\(\\d{2}:\\d{2}\\)|~ \\(В течение дня\\)");
 
         String list = "";
         for (int i = 0; i < newText.length; i++) {
