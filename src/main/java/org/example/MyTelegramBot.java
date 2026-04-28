@@ -75,7 +75,7 @@ import com.google.gson.JsonObject;
 
 public class MyTelegramBot extends TelegramLongPollingBot {
 
-    public static final String DOMEN = "https://v2.vost.pw";
+    public static final String DOMEN = "https://v13.vost.pw";
     public static List<String> anime = new ArrayList<>();
     public static DatabaseManager databaseManager;
 
